@@ -3,6 +3,9 @@
 # W Well 3
 # . open ground 1
 # N prohibited 0
+# TODO: checkvalid, i.e., when are travels invalid, e.g., when there is a nonnegative entry in self.traveldistances or when there is an 'N' in self.VillageMap, I think that's it
+# Loop Travel
+
 import numpy as np
 import sys
 from typing import List
@@ -36,7 +39,7 @@ class Solution:
         # I prefer numpy
         self.VillageMap = np.array(VillageMap)
     def InitializeTravelDistance(self):
-        self.TravelDistance = np.ones((self.n, self.m), dtype=int)*(-1)
+        self.TravelDistances = np.ones((self.n, self.m), dtype=int)*(-1)
 
     # we realize that going back and forth starting from a well is the same as starting from a house
     # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
@@ -50,10 +53,8 @@ class Solution:
         self.Positions = self.ResetPositions() # Counter for how many squares are occupied right now
         NumberOfWells = self.FindWells()
         self.nPositions = NumberOfWells # Number of currently occupied squares
-        # print(self.Positions[0])
         self.Travel()
-        print(self.Positions[0,:self.nPositions])
-        print(self.VillageMap[self.Positions[0,:self.nPositions], self.Positions[1,:self.nPositions]])
+
 
 
     def Travel(self):
@@ -62,16 +63,24 @@ class Solution:
         nNewPositions = 0
         print("coordinates before travelling")
         for i in range(self.nPositions):
-            print(self.Positions[:,i])
+            # print(self.Positions[:,i])
             LocalPositions, nLocalPositions = self.TravelLocal(self.Positions[:,i])
-            print("nlocalpositions: ", nLocalPositions)
+            # print("nlocalpositions: ", nLocalPositions)
             for j in range(nLocalPositions):
                 NewPositions[0][nNewPositions + j] = LocalPositions[0][j]
                 NewPositions[1][nNewPositions + j] = LocalPositions[1][j]
-            print(NewPositions)
+            # print(NewPositions)
             nNewPositions += nLocalPositions
         self.Positions = NewPositions
         self.nPositions = nNewPositions
+        self.UpdateTravelDistances()
+
+    def UpdateTravelDistances(self):
+        self.TravelledDistance += 2
+        # print("TravelDistance before: ", self.TravelDistances)
+        for i in range(self.nPositions):
+            self.TravelDistances[tuple(self.Positions[:,i])] = self.TravelledDistance
+        # print("TravelDistance after: ", self.TravelDistances)
 
     
     def ResetPositions(self):
@@ -85,7 +94,7 @@ class Solution:
         # Traveldistance starting from well is 0, occupy the Wells
         for i in range(NumberOfWells):
             coords = WellRow[i], WellCol[i]
-            self.TravelDistance[coords] = 0
+            self.TravelDistances[coords] = 0
             self.Positions[0][i] = WellRow[i]
             self.Positions[1][i] = WellCol[i]
         return NumberOfWells
@@ -128,7 +137,7 @@ class Solution:
 
     def CheckValid(self, *coords):
         return True
-        if(self.TravelDistance[coords]>-1):
+        if(self.TravelDistances[coords]>-1):
             return True
         else:
             return False
