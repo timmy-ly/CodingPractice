@@ -3,7 +3,7 @@
 # W Well 3
 # . open ground 1
 # N prohibited 0
-# TODO: checkvalid, i.e., when are travels invalid, e.g., when there is a nonnegative entry in self.traveldistances or when there is an 'N' in self.VillageMap, I think that's it
+# TODO: set . and N Distances to 0 after last travel
 # Loop Travel
 
 import numpy as np
@@ -43,7 +43,7 @@ class Solution:
 
     # we realize that going back and forth starting from a well is the same as starting from a house
     # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
-    # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course moving on to already covered positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
+    # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course travelling to already covered positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
     # It would be great if we could visualize the progression of TravelledDistance
     def chefAndWells(self, n : int, m : int, c : List[List[str]]) -> List[List[int]]:
         self.set_n(n)
@@ -61,7 +61,7 @@ class Solution:
         NewPositions = self.ResetPositions()
         # nDummyCurrentPositions = self.nPositions # Counter for how many squares are occupied right now
         nNewPositions = 0
-        print("coordinates before travelling")
+        # print("coordinates before travelling")
         for i in range(self.nPositions):
             # print(self.Positions[:,i])
             LocalPositions, nLocalPositions = self.TravelLocal(self.Positions[:,i])
@@ -77,10 +77,10 @@ class Solution:
 
     def UpdateTravelDistances(self):
         self.TravelledDistance += 2
-        # print("TravelDistance before: ", self.TravelDistances)
+        print("TravelDistance before: ", self.TravelDistances)
         for i in range(self.nPositions):
             self.TravelDistances[tuple(self.Positions[:,i])] = self.TravelledDistance
-        # print("TravelDistance after: ", self.TravelDistances)
+        print("TravelDistance after: ", self.TravelDistances)
 
     
     def ResetPositions(self):
@@ -99,6 +99,12 @@ class Solution:
             self.Positions[1][i] = WellCol[i]
         return NumberOfWells
     def TravelLocal(self, CurrentPosition):
+        # as per challenge, Traveldistance from N or . are defined as 0. Not sure if I agree. Could detach this part...
+        CurrentPosition = tuple(CurrentPosition)
+        # print(self.VillageMap[CurrentPosition])
+        if( (self.VillageMap[CurrentPosition] == 'N') or (self.VillageMap[CurrentPosition] == '.') ):
+            # print("its N or .")
+            self.TravelDistances[CurrentPosition] = 0
         row, col = CurrentPosition
         nNewPositions = 0
         NewPositions = np.ones( (2,4), dtype=int )*(-1)
@@ -136,11 +142,12 @@ class Solution:
 
 
     def CheckValid(self, *coords):
-        return True
-        if(self.TravelDistances[coords]>-1):
-            return True
-        else:
+        # >0 or >-1 are both fine at first since there should be no secondary Travel from a well. Meaning, We travel from all wells. Once a route funnels into another well (which is only possible if two wells are side by side), there is no need to travel further since any other route is longer
+        # >0 ensures no conflict(unwanted travelstop) when setting "." and "N" to 0. 
+        if(self.TravelDistances[coords]>0 or self.VillageMap[coords] == "N"):
             return False
+        else:
+            return True
 
 
 
