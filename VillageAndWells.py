@@ -3,7 +3,7 @@
 # W Well 3
 # . open ground 1
 # N prohibited 0
-# TODO: set . and N Distances to 0 after last travel
+# TODO: set . and N Distances to 0 using SetOpenProhibitedDistance
 # Loop Travel
 
 import numpy as np
@@ -54,6 +54,7 @@ class Solution:
         NumberOfWells = self.FindWells()
         self.nPositions = NumberOfWells # Number of currently occupied squares
         self.Travel()
+        self.SetOpenProhibitedDistances()
 
 
 
@@ -98,13 +99,14 @@ class Solution:
             self.Positions[0][i] = WellRow[i]
             self.Positions[1][i] = WellCol[i]
         return NumberOfWells
-    def TravelLocal(self, CurrentPosition):
+    def SetOpenProhibitedDistance(self, coords):
         # as per challenge, Traveldistance from N or . are defined as 0. Not sure if I agree. Could detach this part...
-        CurrentPosition = tuple(CurrentPosition)
+        coords = tuple(coords)
         # print(self.VillageMap[CurrentPosition])
-        if( (self.VillageMap[CurrentPosition] == 'N') or (self.VillageMap[CurrentPosition] == '.') ):
+        if( (self.VillageMap[coords] == 'N') or (self.VillageMap[coords] == '.') ):
             # print("its N or .")
-            self.TravelDistances[CurrentPosition] = 0
+            self.TravelDistances[coords] = 0
+    def TravelLocal(self, CurrentPosition):
         row, col = CurrentPosition
         nNewPositions = 0
         NewPositions = np.ones( (2,4), dtype=int )*(-1)
