@@ -3,7 +3,7 @@
 # W Well 3
 # . open ground 1
 # N prohibited 0
-# TODO: set . and N Distances to 0 using SetOpenProhibitedDistance
+# TODO: 
 # Loop Travel
 
 import numpy as np
@@ -55,6 +55,7 @@ class Solution:
         self.nPositions = NumberOfWells # Number of currently occupied squares
         self.Travel()
         self.SetOpenProhibitedDistances()
+        print("TravelDistance after: ", self.TravelDistances)
 
 
 
@@ -81,7 +82,7 @@ class Solution:
         print("TravelDistance before: ", self.TravelDistances)
         for i in range(self.nPositions):
             self.TravelDistances[tuple(self.Positions[:,i])] = self.TravelledDistance
-        print("TravelDistance after: ", self.TravelDistances)
+        # print("TravelDistance after: ", self.TravelDistances)
 
     
     def ResetPositions(self):
@@ -99,13 +100,16 @@ class Solution:
             self.Positions[0][i] = WellRow[i]
             self.Positions[1][i] = WellCol[i]
         return NumberOfWells
-    def SetOpenProhibitedDistance(self, coords):
+    def SetOpenProhibitedDistances(self):
         # as per challenge, Traveldistance from N or . are defined as 0. Not sure if I agree. Could detach this part...
-        coords = tuple(coords)
-        # print(self.VillageMap[CurrentPosition])
-        if( (self.VillageMap[coords] == 'N') or (self.VillageMap[coords] == '.') ):
-            # print("its N or .")
-            self.TravelDistances[coords] = 0
+        for i in range(self.nPositions):
+            coords = tuple(self.Positions[:,i])
+            # print("coords", coords)
+            # print(self.VillageMap[CurrentPosition])
+            if( (self.VillageMap[coords] == 'N') or (self.VillageMap[coords] == '.') ):
+                # print("its N or .")
+                # print(coords, "setting Traveldistances to 0")
+                self.TravelDistances[coords] = 0
     def TravelLocal(self, CurrentPosition):
         row, col = CurrentPosition
         nNewPositions = 0
