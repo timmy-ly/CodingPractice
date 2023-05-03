@@ -3,8 +3,7 @@
 # W Well 3
 # . open ground 1
 # N prohibited 0
-# TODO: 
-# Loop Travel
+
 
 import numpy as np
 import sys
@@ -53,9 +52,13 @@ class Solution:
         self.Positions = self.ResetPositions() # Counter for how many squares are occupied right now
         NumberOfWells = self.FindWells()
         self.nPositions = NumberOfWells # Number of currently occupied squares
-        self.Travel()
-        self.SetOpenProhibitedDistances()
-        print("TravelDistance after: ", self.TravelDistances)
+        while self.nPositions>0:
+            print("npositions: ", self.nPositions)
+            self.TravelledDistance += 2
+            self.Travel()
+            self.SetOpenProhibitedDistances()
+            print("Positions\n", self.Positions)
+            print("TravelDistance after: \n", self.TravelDistances)
 
 
 
@@ -72,16 +75,15 @@ class Solution:
                 NewPositions[0][nNewPositions + j] = LocalPositions[0][j]
                 NewPositions[1][nNewPositions + j] = LocalPositions[1][j]
             # print(NewPositions)
+            self.UpdateTravelDistanceLocal(nLocalPositions, LocalPositions)
             nNewPositions += nLocalPositions
         self.Positions = NewPositions
         self.nPositions = nNewPositions
-        self.UpdateTravelDistances()
 
-    def UpdateTravelDistances(self):
-        self.TravelledDistance += 2
-        print("TravelDistance before: ", self.TravelDistances)
-        for i in range(self.nPositions):
-            self.TravelDistances[tuple(self.Positions[:,i])] = self.TravelledDistance
+    def UpdateTravelDistanceLocal(self, nLocalPositions, LocalPositions):
+        # print("TravelDistance before: ", self.TravelDistances)
+        for i in range(nLocalPositions):
+            self.TravelDistances[tuple(LocalPositions[:,i])] = self.TravelledDistance
         # print("TravelDistance after: ", self.TravelDistances)
 
     
@@ -150,7 +152,10 @@ class Solution:
     def CheckValid(self, *coords):
         # >0 or >-1 are both fine at first since there should be no secondary Travel from a well. Meaning, We travel from all wells. Once a route funnels into another well (which is only possible if two wells are side by side), there is no need to travel further since any other route is longer
         # >0 ensures no conflict(unwanted travelstop) when setting "." and "N" to 0. 
-        if(self.TravelDistances[coords]>0 or self.VillageMap[coords] == "N"):
+        if(self.VillageMap[coords] == "N"):
+            self.TravelDistances[coords]=0
+            return False
+        if(self.TravelDistances[coords]>-1):
             return False
         else:
             return True
