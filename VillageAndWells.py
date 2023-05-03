@@ -8,7 +8,8 @@
 import numpy as np
 import sys
 from typing import List
-
+print(np.__version__)
+# 
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
 VillageComponents = np.array(["H", "W", ".", "N"])
 def CreateRandomVillage(n, m):
@@ -53,12 +54,12 @@ class Solution:
         NumberOfWells = self.FindWells()
         self.nPositions = NumberOfWells # Number of currently occupied squares
         while self.nPositions>0:
-            print("npositions: ", self.nPositions)
+            # print("npositions: ", self.nPositions)
             self.TravelledDistance += 2
             self.Travel()
             self.SetOpenProhibitedDistances()
-            print("Positions\n", self.Positions)
-            print("TravelDistance after: \n", self.TravelDistances)
+            # print("Positions\n", self.Positions)
+            # print("TravelDistance after: \n", self.TravelDistances)
         self.CleanUp()
         return self.TravelDistances
 
