@@ -59,6 +59,8 @@ class Solution:
             self.SetOpenProhibitedDistances()
             print("Positions\n", self.Positions)
             print("TravelDistance after: \n", self.TravelDistances)
+        self.CleanUp()
+        return self.TravelDistances
 
 
 
@@ -86,21 +88,35 @@ class Solution:
             self.TravelDistances[tuple(LocalPositions[:,i])] = self.TravelledDistance
         # print("TravelDistance after: ", self.TravelDistances)
 
-    
+    def CleanUp(self):
+        # assign TravelDistances 0 to all remaining N and .
+        # need a filter to avoid looping through the whole array again?
+        self.FindOpenProhibited()
+
     def ResetPositions(self):
         return np.ones( (2,self.n*self.m), dtype=int )*(-1)
+
+    def FindOpenProhibited(self):
+        Mask = ( ((self.VillageMap == "N") | (self.VillageMap == ".")) & (self.TravelDistances == -1 ) )
+        rows, cols = np.indices((self.n,self.m))
+        rows, cols = rows[Mask], cols[Mask]
+        NSquares = len(rows)
+        for i in range(NSquares):
+            coords = rows[i], cols[i]
+            # set TravelDistances to 0 for N and .
+            self.TravelDistances[coords] = 0
     # first, get the indices of the wells
     def FindWells(self):
-        WellsMask = (self.VillageMap == "W")
-        WellRow, WellCol = np.indices((self.n,self.m))
-        WellRow, WellCol = WellRow[WellsMask], WellCol[WellsMask]
-        NumberOfWells = len(WellRow)
+        Mask = (self.VillageMap == "W")
+        rows, cols = np.indices((self.n,self.m))
+        rows, cols = rows[Mask], cols[Mask]
+        NumberOfWells = len(rows)
         # Traveldistance starting from well is 0, occupy the Wells
         for i in range(NumberOfWells):
-            coords = WellRow[i], WellCol[i]
+            coords = rows[i], cols[i]
             self.TravelDistances[coords] = 0
-            self.Positions[0][i] = WellRow[i]
-            self.Positions[1][i] = WellCol[i]
+            self.Positions[0][i] = rows[i]
+            self.Positions[1][i] = cols[i]
         return NumberOfWells
     def SetOpenProhibitedDistances(self):
         # as per challenge, Traveldistance from N or . are defined as 0. Not sure if I agree. Could detach this part...
