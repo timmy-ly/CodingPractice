@@ -1,28 +1,40 @@
-#User function Template for python3
 # H House 2
 # W Well 3
 # . open ground 1
 # N prohibited 0
 
-
-import numpy as np
-import sys
-from typing import List
-print(np.__version__)
-# 
+# need to optimize
+# for optimization, we realize that only the first TravelStep allows traveling in all directions
+# afterwards the pointy ends allow 3 directions while the side branches only allow 2-3 directions
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
-VillageComponents = np.array(["H", "W", ".", "N"])
-def CreateRandomVillage(n, m):
-    rng = np.random.default_rng(seed = 202305)
-    VillageMap = rng.choice( VillageComponents,  size = (n,m) )
-    Print2DArray(VillageMap)
-    return VillageMap
+# 5 5
+# N H N . H
+# N N W . N
+# N H N H .
+# N W . W .
+# H H W . W
 
-def Print2DArray(a):
-    print("\n Generated a random village ")
-    np.savetxt(sys.stdout.buffer, a, fmt='%s')
 
-CreateRandomVillage(5,5)
+from typing import List
+import numpy as np
+
+import cProfile
+import pstats
+
+ProfileCPU = True
+SaveName = 'VillageAndWells'
+DumpName = SaveName + '.prof'
+
+# 
+
+
+
+
+def PrintDump(Filename, *restrictions, Key = 'cumulative'):
+    p = pstats.Stats(Filename)
+    p.strip_dirs().sort_stats(Key).print_stats(*restrictions)
+
+
 
 class Solution:
     def __init__(self) -> None:
@@ -45,7 +57,11 @@ class Solution:
     # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
     # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course travelling to already covered positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
     # It would be great if we could visualize the progression of TravelledDistance
+
     def chefAndWells(self, n : int, m : int, c : List[List[str]]) -> List[List[int]]:
+        if(ProfileCPU):
+            prof = cProfile.Profile()
+            prof.enable()
         self.set_n(n)
         self.set_m(m)
         self.set_VillageMap(c)
@@ -61,6 +77,10 @@ class Solution:
             # print("Positions\n", self.Positions)
             # print("TravelDistance after: \n", self.TravelDistances)
         self.CleanUp()
+        if(ProfileCPU):
+            prof.disable()
+            prof.dump_stats(DumpName)
+            PrintDump(DumpName, Key = 'tottime')
         return self.TravelDistances
 
 
@@ -78,7 +98,7 @@ class Solution:
                 NewPositions[0][nNewPositions + j] = LocalPositions[0][j]
                 NewPositions[1][nNewPositions + j] = LocalPositions[1][j]
             # print(NewPositions)
-            self.UpdateTravelDistanceLocal(nLocalPositions, LocalPositions)
+            # self.UpdateTravelDistanceLocal(nLocalPositions, LocalPositions)
             nNewPositions += nLocalPositions
         self.Positions = NewPositions
         self.nPositions = nNewPositions
@@ -88,6 +108,8 @@ class Solution:
         for i in range(nLocalPositions):
             self.TravelDistances[tuple(LocalPositions[:,i])] = self.TravelledDistance
         # print("TravelDistance after: ", self.TravelDistances)
+    def UpdateTravelDistance(self, *coords):
+        self.TravelDistances[coords] = self.TravelledDistance
 
     def CleanUp(self):
         # assign TravelDistances 0 to all remaining N and .
@@ -172,9 +194,10 @@ class Solution:
         if(self.VillageMap[coords] == "N"):
             self.TravelDistances[coords]=0
             return False
-        if(self.TravelDistances[coords]>-1):
+        elif(self.TravelDistances[coords]>-1):
             return False
         else:
+            self.UpdateTravelDistance(*coords)
             return True
 
 
@@ -238,5 +261,6 @@ if __name__=="__main__":
             for c in el:
                 print(c, end=" ")
             print()
+
 
 # } Driver Code Ends
