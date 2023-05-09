@@ -6,6 +6,8 @@
 # need to optimize
 # for optimization, we realize that only the first TravelStep allows traveling in all directions
 # afterwards the pointy ends allow 3 directions while the side branches only allow 2-3 directions
+# create NewPositions by creating shifted Index arrays?
+# or Map the occupied squares and iterate? Mask then loop?
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
 # 5 5
 # N H N . H
@@ -18,21 +20,16 @@
 from typing import List
 import numpy as np
 
-import cProfile
-import pstats
 
-ProfileCPU = True
-SaveName = 'VillageAndWells'
-DumpName = SaveName + '.prof'
+
+
 
 # 
 
 
 
 
-def PrintDump(Filename, *restrictions, Key = 'cumulative'):
-    p = pstats.Stats(Filename)
-    p.strip_dirs().sort_stats(Key).print_stats(*restrictions)
+
 
 
 
@@ -59,9 +56,6 @@ class Solution:
     # It would be great if we could visualize the progression of TravelledDistance
 
     def chefAndWells(self, n : int, m : int, c : List[List[str]]) -> List[List[int]]:
-        if(ProfileCPU):
-            prof = cProfile.Profile()
-            prof.enable()
         self.set_n(n)
         self.set_m(m)
         self.set_VillageMap(c)
@@ -77,10 +71,6 @@ class Solution:
             # print("Positions\n", self.Positions)
             # print("TravelDistance after: \n", self.TravelDistances)
         self.CleanUp()
-        if(ProfileCPU):
-            prof.disable()
-            prof.dump_stats(DumpName)
-            PrintDump(DumpName, Key = 'tottime')
         return self.TravelDistances
 
 
