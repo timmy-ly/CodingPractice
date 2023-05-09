@@ -2,9 +2,9 @@ import numpy as np
 import sys
 import cProfile
 import pstats
-import __main__
 from VillageAndWells import Solution
 
+TestName = "MainTest"
 n = m = 100
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
 VillageComponents = np.array(["H", "W", ".", "N"])
@@ -37,7 +37,7 @@ if __name__=="__main__":
     prof.disable()
     prof.dump_stats(DumpName)
     PrintDump(DumpName, Key = 'tottime')
-    print("{:} success".format(__main__.__file__))
+    print("{:} success".format(TestName))
     
     # for el in res:
     #     for c in el:
