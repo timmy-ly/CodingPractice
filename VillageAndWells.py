@@ -84,7 +84,50 @@ class Solution:
             nNewPositions += nLocalPositions
         self.Positions = NewPositions
         self.nPositions = nNewPositions
-
+    def TravelLocal(self, CurrentPosition):
+        row, col = CurrentPosition
+        nNewPositions = 0
+        NewPositions = np.ones( (2,4), dtype=int )*(-1)
+        # go right
+        if(col < self.m-1):
+            NewCol = col + 1
+            if(self.CheckValid(row, NewCol)):
+                NewPositions[0, nNewPositions] = row
+                NewPositions[1, nNewPositions] = NewCol
+                nNewPositions += 1
+        # go left
+        if(col > 0):
+            NewCol = col - 1
+            if(self.CheckValid(row, NewCol)):
+                NewPositions[0, nNewPositions] = row
+                NewPositions[1, nNewPositions] = NewCol
+                nNewPositions += 1
+        # go up
+        if(row > 0):
+            NewRow = row - 1
+            if(self.CheckValid(NewRow, col)):
+                NewPositions[0, nNewPositions] = NewRow
+                NewPositions[1, nNewPositions] = col
+                nNewPositions += 1
+        # go down
+        if(row < self.n-1):
+            NewRow = row + 1
+            if(self.CheckValid(NewRow, col)):
+                NewPositions[0, nNewPositions] = NewRow
+                NewPositions[1, nNewPositions] = col
+                nNewPositions += 1
+        return NewPositions, nNewPositions
+    def CheckValid(self, *coords):
+        # >0 or >-1 are both fine at first since there should be no secondary Travel from a well. Meaning, We travel from all wells. Once a route funnels into another well (which is only possible if two wells are side by side), there is no need to travel further since any other route is longer
+        # >0 ensures no conflict(unwanted travelstop) when setting "." and "N" to 0. 
+        if(self.TravelDistances[coords]>-1):
+            return False
+        elif(self.VillageMap[coords] == "N"):
+            self.TravelDistances[coords]=0
+            return False
+        else:
+            self.UpdateTravelDistance(*coords)
+            return True
     def UpdateTravelDistanceLocal(self, nLocalPositions, LocalPositions):
         # print("TravelDistance before: ", self.TravelDistances)
         for i in range(nLocalPositions):
@@ -133,54 +176,7 @@ class Solution:
                 # print("its N or .")
                 # print(coords, "setting Traveldistances to 0")
                 self.TravelDistances[coords] = 0
-    def TravelLocal(self, CurrentPosition):
-        row, col = CurrentPosition
-        nNewPositions = 0
-        NewPositions = np.ones( (2,4), dtype=int )*(-1)
-        # go right
-        if(col < self.m-1):
-            NewCol = col + 1
-            if(self.CheckValid(row, NewCol)):
-                NewPositions[0, nNewPositions] = row
-                NewPositions[1, nNewPositions] = NewCol
-                nNewPositions += 1
-        # go left
-        if(col > 0):
-            NewCol = col - 1
-            if(self.CheckValid(row, NewCol)):
-                NewPositions[0, nNewPositions] = row
-                NewPositions[1, nNewPositions] = NewCol
-                nNewPositions += 1
-        # go up
-        if(row > 0):
-            NewRow = row - 1
-            if(self.CheckValid(NewRow, col)):
-                NewPositions[0, nNewPositions] = NewRow
-                NewPositions[1, nNewPositions] = col
-                nNewPositions += 1
-        # go down
-        if(row < self.n-1):
-            NewRow = row + 1
-            if(self.CheckValid(NewRow, col)):
-                NewPositions[0, nNewPositions] = NewRow
-                NewPositions[1, nNewPositions] = col
-                nNewPositions += 1
-        return NewPositions, nNewPositions
-    
 
-
-
-    def CheckValid(self, *coords):
-        # >0 or >-1 are both fine at first since there should be no secondary Travel from a well. Meaning, We travel from all wells. Once a route funnels into another well (which is only possible if two wells are side by side), there is no need to travel further since any other route is longer
-        # >0 ensures no conflict(unwanted travelstop) when setting "." and "N" to 0. 
-        if(self.VillageMap[coords] == "N"):
-            self.TravelDistances[coords]=0
-            return False
-        elif(self.TravelDistances[coords]>-1):
-            return False
-        else:
-            self.UpdateTravelDistance(*coords)
-            return True
 
 
 
