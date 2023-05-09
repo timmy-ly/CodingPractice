@@ -8,6 +8,7 @@
 # afterwards the pointy ends allow 3 directions while the side branches only allow 2-3 directions
 # create NewPositions by creating shifted Index arrays?
 # or Map the occupied squares and iterate? Mask then loop?
+# use a hashset. hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
 # 5 5
 # N H N . H
@@ -19,15 +20,6 @@
 
 from typing import List
 import numpy as np
-
-
-
-
-
-# 
-
-
-
 
 
 
@@ -52,7 +44,7 @@ class Solution:
 
     # we realize that going back and forth starting from a well is the same as starting from a house
     # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
-    # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course travelling to already covered positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
+    # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course travelling to already visited positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
     # It would be great if we could visualize the progression of TravelledDistance
 
     def chefAndWells(self, n : int, m : int, c : List[List[str]]) -> List[List[int]]:

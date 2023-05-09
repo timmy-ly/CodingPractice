@@ -27,7 +27,7 @@ def Print2DArray(a):
     np.savetxt(sys.stdout.buffer, a, fmt='%s')
 
 
-
+# I guess a proper unittest needs an exception catcher somewhere
 if __name__=="__main__":
     VillageMap = CreateRandomVillage(n, m)
     obj = Solution()
