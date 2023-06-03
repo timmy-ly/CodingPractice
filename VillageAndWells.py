@@ -9,6 +9,7 @@
 # create NewPositions by creating shifted Index arrays?
 # or Map the occupied squares and iterate? Mask then loop?
 # use a hashset. hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
+# might have been better to use 1d coordinates, i.e., sth. like iy*nx + ix
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
 # 5 5
 # N H N . H
@@ -23,14 +24,14 @@ import numpy as np
 
 
 
-def reset_Coords(n,m):
-    return np.ones( (2,n*m), dtype=int )*(-1)
+def reset_Coords(ny,nx):
+    return np.ones( (2,ny*nx), dtype=int )*(-1)
 
 class SetOfSquares:
 # A set of squares that share the TravelledDistance
-    def __init__(self, n, m, TravelledDistance) -> None:
-        self.n, self.m = n, m
-        self.Coords = reset_Coords(n,m) 
+    def __init__(self, ny, nx, TravelledDistance) -> None:
+        self.ny, self.nx = ny, nx
+        self.Coords = reset_Coords(ny,nx) 
         self.TravelledDistance = self.set_TravelledDistance(TravelledDistance)
         self.Amount = 0
     def set_TravelledDistance(self, TravelledDistance):
@@ -38,49 +39,80 @@ class SetOfSquares:
     def set_Size(self, Amount):
         self.Amount = Amount
 class Solution:
+    """Class for solving the village and wells problem, mainly for scope"""
     def __init__(self) -> None:
-        self.n = 0
-        self.m = 0
+        self.ny = 0
+        self.nx = 0
         self.c = None
         self.TravelledDistance = 0 # current travelleddistance
         self.AmountOfWells = 0
-
-    def set_n(self,n):
-        self.n = n
-    def set_m(self,m):
-        self.m = m
+    def chefAndWells(self, ny : int, nx : int, VillageMap : List[List[str]]) -> List[List[int]]:
+        """Main method which solves the village and wells problem"""
+        self.set_ny(ny)
+        self.set_nx(nx)
+        self.set_VillageMap(VillageMap)
+        self.set_AllCoordinates()
+        self.initialize_TravelDistances()
+        self.calculate_TravelDistances()
+        # self.CleanUp()
+        return self.TravelDistances
+    def set_ny(self,ny):
+        """set the y-length of the village map"""
+        self.ny = ny
+    def set_nx(self,nx):
+        """set the x-length of the village map"""
+        self.nx = nx
     def set_VillageMap(self, VillageMap):
-        # I prefer numpy
+        """set the VillageMap attribute by transforming the list input into an array"""
         self.VillageMap = np.array(VillageMap)
-    def InitializeTravelDistances(self):
-        self.TravelDistances = np.ones((self.n, self.m), dtype=int)*(-1)
-    # we realize that going back and forth starting from a well is the same as starting from a house
-    # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
-    # we further realize that we can find all possible routes of length n by travelling from the current location in all 4 directions. Of course travelling to already visited positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
-    # It would be great if we could visualize the progression of TravelledDistance
+    def set_AllCoordinates(self):
+        self.AllCoordinates = np.indices((self.ny,self.nx))
+    def initialize_TravelDistances(self):
+        """initialize array of shape (ny,nx) with -1 entries to signify that non of the squares have been travelled to yet"""
+        self.TravelDistances = np.ones((self.ny, self.nx), dtype=int)*(-1)
+    def calculate_TravelDistances(self):
+        """main algorithm"""
+        self.initialize_CurrentSquares(self)
 
-    def chefAndWells(self, n : int, m : int, c : List[List[str]]) -> List[List[int]]:
-        self.set_n(n)
-        self.set_m(m)
-        self.set_VillageMap(c)
-        self.InitializeTravelDistances()
-        CurrentSquares = SetOfSquares(n,m, 0)
-        self.get_Wells() #maybe incorporate get_wells in SetOfSquares? no, dont, you want to be able to get Wells from anywhere
+        CurrentSquares = SetOfSquares(ny,nx, 0)
+        self.get_WellCoordinates()
         CurrentSquares.Amount = self.AmountOfWells
         while CurrentSquares.Amount>0:
             # print("npositions: ", self.NumberCurrentlyOccupiedSquares)
             self.TravelledDistance += 2
             self.Travel(CurrentSquares)
             self.SetOpenProhibitedDistances()
-            # print("SetOfSquares\n", self.SetOfSquares)
-            # print("TravelDistance after: \n", self.TravelDistances)
-        self.CleanUp()
-        return self.TravelDistances
+            # print("SetOfSquares\ny", self.SetOfSquares)
+            # print("TravelDistance after: \ny", self.TravelDistances)
+        pass
+    def initialize_CurrentSquares(self):
+
+        pass
+    def get_WellCoordinates(self):
+        WellMask = (self.VillageMap == "W")
+        print(WellMask.nonzero())
+        pass
+        # Coords = {}
+        # rows, cols = self.AllCoordinates
+        # rows, cols = rows[WellMask], cols[WellMask]
+        # self.AmountOfWells = len(rows)
+        # # Traveldistance starting from well is 0, occupy the Wells
+        # for i in range(self.AmountOfWells):
+        #     CoordsSingle = rows[i], cols[i]
+        #     self.TravelDistances[CoordsSingle] = 0
+        #     Coords.add(CoordsSingle)
+        # return Coords#############################################Last
+    # we realize that going back and forth starting from a well is the same as starting from a house
+    # suppose we find a shortest route between a house and a well, then the corresponding sections of the route are also the shortest routes for houses along the route
+    # we further realize that we can find all possible routes of length ny by travelling from the current location in all 4 directions. Of course travelling to already visited positions(including the previous one) is useless. What about the case when two people want to move on to the same square? It does not matter, since both have travelled the same distance. We save the TravelledDistance in a separate matrix. We can even create a PreviousLocation matrix from which we can recursively obtain a shortest route. 
+    # It would be great if we could visualize the progression of TravelledDistance
+
+
 
 
 
     def Travel(self, CurrentSquares):
-        NewPositions = reset_Coords(self.n,self.m)
+        NewPositions = reset_Coords(self.ny,self.nx)
         # nDummyCurrentPositions = self.NumberCurrentlyOccupiedSquares # Counter for how many squares are occupied right now
         nNewPositions = 0
         # print("coordinates before travelling")
@@ -101,7 +133,7 @@ class Solution:
         nNewPositions = 0
         NewPositions = np.ones( (2,4), dtype=int )*(-1)
         # go right
-        if(col < self.m-1):
+        if(col < self.nx-1):
             NewCol = col + 1
             if(self.CheckValid(row, NewCol)):
                 NewPositions[0, nNewPositions] = row
@@ -122,7 +154,7 @@ class Solution:
                 NewPositions[1, nNewPositions] = col
                 nNewPositions += 1
         # go down
-        if(row < self.n-1):
+        if(row < self.ny-1):
             NewRow = row + 1
             if(self.CheckValid(NewRow, col)):
                 NewPositions[0, nNewPositions] = NewRow
@@ -157,7 +189,7 @@ class Solution:
 
     def FindOpenProhibited(self):
         Mask = ( ((self.VillageMap == "N") | (self.VillageMap == ".")) & (self.TravelDistances == -1 ) )
-        rows, cols = np.indices((self.n,self.m))
+        rows, cols = np.indices((self.ny,self.nx))
         rows, cols = rows[Mask], cols[Mask]
         NSquares = len(rows)
         for i in range(NSquares):
@@ -165,10 +197,11 @@ class Solution:
             # set TravelDistances to 0 for N and .
             self.TravelDistances[coords] = 0
     # first, get the indices of the wells
-    def get_Wells(self):
+
+    def get_Wells_old(self):
         Mask = (self.VillageMap == "W")
         Coords = {}
-        rows, cols = np.indices((self.n,self.m))
+        rows, cols = np.indices((self.ny,self.nx))
         rows, cols = rows[Mask], cols[Mask]
         self.AmountOfWells = len(rows)
         # Traveldistance starting from well is 0, occupy the Wells
@@ -203,10 +236,10 @@ class Solution:
 class StringMatrix:
     def __init__(self) -> None:
         pass
-    def Input(self,n,m):
+    def Input(self,ny,nx):
         matrix=[]
         #matrix input
-        for _ in range(n):
+        for _ in range(ny):
             matrix.append([i for i in input().split()])
         return matrix
     def Print(self,arr):
@@ -220,10 +253,10 @@ class StringMatrix:
 class IntMatrix:
     def __init__(self) -> None:
         pass
-    def Input(self,n,m):
+    def Input(self,ny,nx):
         matrix=[]
         #matrix input
-        for _ in range(n):
+        for _ in range(ny):
             matrix.append([int(i) for i in input().strip().split()])
         return matrix
     def Print(self,arr):
@@ -238,14 +271,14 @@ if __name__=="__main__":
     t = int(input())
     for _ in range(t):
         
-        n,m= map(int,input().split())
+        ny,nx= map(int,input().split())
     
         
         
-        c=StringMatrix().Input(n, m)
+        c=StringMatrix().Input(ny, nx)
         
         obj = Solution()
-        res = obj.chefAndWells(n, m, c)
+        res = obj.chefAndWells(ny, nx, c)
         
         for el in res:
             for c in el:
