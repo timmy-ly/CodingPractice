@@ -48,14 +48,16 @@ class Solution:
         self.AmountOfWells = 0
     def chefAndWells(self, ny : int, nx : int, VillageMap : List[List[str]]) -> List[List[int]]:
         """Main method which solves the village and wells problem"""
-        self.set_ny(ny)
-        self.set_nx(nx)
-        self.set_VillageMap(VillageMap)
-        self.set_AllCoordinates()
+        self.set_PrerequisiteAttributes(ny, nx, VillageMap)
         self.initialize_TravelDistances()
         self.calculate_TravelDistances()
         # self.CleanUp()
         return self.TravelDistances
+    def set_PrerequisiteAttributes(self, ny, nx, VillageMap):
+        self.set_ny(ny)
+        self.set_nx(nx)
+        self.set_VillageMap(VillageMap)
+        self.set_AllCoordinates()
     def set_ny(self,ny):
         """set the y-length of the village map"""
         self.ny = ny
@@ -90,8 +92,9 @@ class Solution:
         pass
     def get_WellCoordinates(self):
         WellMask = (self.VillageMap == "W")
-        print(WellMask.nonzero())
-        pass
+        Coords = np.transpose(WellMask.nonzero())
+        print(Coords)
+        return Coords
         # Coords = {}
         # rows, cols = self.AllCoordinates
         # rows, cols = rows[WellMask], cols[WellMask]

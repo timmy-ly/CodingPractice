@@ -22,17 +22,15 @@ class Unittests:
         p = pstats.Stats(Filename)
         p.strip_dirs().sort_stats(Key).print_stats(*restrictions)
 
-    def test_chefAndWells(self, SaveName, *chefAndWellsArgs):
-        from VillageAndWells import Solution
-        sol = Solution()
+    def test_chefAndWells(self, sol, *chefAndWellsArgs):
         res = sol.chefAndWells(*chefAndWellsArgs)
         # for el in res:
         #     for c in el:
         #         print(c, end=" ")
         #     print()
-    def test_get_WellCoordinates(self):
-
-        pass
+    def test_get_WellCoordinates(self, sol, *args):
+        sol.set_PrerequisiteAttributes(*args)
+        sol.get_WellCoordinates()
 
 
 
