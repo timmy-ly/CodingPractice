@@ -3,7 +3,8 @@ import cProfile
 from VillageAndWells import *
 from UnittestsLib import Unittests
 
-Ny = Nx = 10
+# Ny = Nx = 10
+Ny, Nx = 4, 1
 ProfileCPU = True
 SaveName = 'VillageAndWells'
 DumpName = SaveName + '.prof'

@@ -31,6 +31,7 @@ class Unittests:
         res = FunctionHandle(*args)
         prof.disable()
         self.outputProfilingData(prof, SaveName)
+        print(res)
         return res
     def outputProfilingData(self, prof, SaveName):
         """output the profiling data as a file and in the terminal"""

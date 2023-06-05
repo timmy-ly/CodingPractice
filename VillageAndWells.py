@@ -33,20 +33,6 @@ def convertSetOfTuplesTo2DArray(SetOfTuples):
 def convert2DArrayToSetOfTuples(Array):
     return set(zip(Array[:,0], Array[:,1]))
 
-def reset_Coords(Ny,Nx):
-    return np.ones( (2,Ny*Nx), dtype=int )*(-1)
-
-# class SetOfSquares:
-# # A set of squares that share the CurrentTravelDistance
-#     def __init__(self, Ny, Nx, CurrentTravelDistance) -> None:
-#         self.Ny, self.Nx = Ny, Nx
-#         self.Coords = reset_Coords(Ny,Nx) 
-#         self.CurrentTravelDistance = self.set_CurrentTravelDistance(CurrentTravelDistance)
-#         self.Amount = 0
-#     def set_CurrentTravelDistance(self, CurrentTravelDistance):
-#         self.CurrentTravelDistance = CurrentTravelDistance
-#     def set_Size(self, Amount):
-#         self.Amount = Amount
 class Solution:
     """Class for solving the village and wells problem, mainly for scope"""
     def __init__(self) -> None:
@@ -65,7 +51,7 @@ class Solution:
         self.addProhibitedToVisitedSquares()
         self.calculateTravelDistances()
         # self.CleanUp()
-        print(self.TravelDistances)
+        # print(self.TravelDistances)
         return self.TravelDistances
     def setPrerequisiteAttributes(self, Ny, Nx, VillageMap):
         self.setNy(Ny)
@@ -143,13 +129,13 @@ class Solution:
         if( (NewSquare not in self.VisitedSquares) and (not self.isOutOfBottomBoundary(NewSquare)) ):
             self.CurrentSquares.add(NewSquare)
     def isOutOfRightBoundary(self, Square):
-        return Square[1]>=self.Ny
+        return Square[1]>=self.Nx
     def isOutOfLeftBoundary(self, Square):
         return Square[1]<0
     def isOutOfTopBoundary(self, Square):
         return Square[0]<0
     def isOutOfBottomBoundary(self, Square):
-        return Square[0]>=self.Nx
+        return Square[0]>=self.Ny
     def updateTravelDistances(self):
         for Square in self.CurrentSquares:
             self.TravelDistances[Square] = self.CurrentTravelDistance
