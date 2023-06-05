@@ -51,14 +51,11 @@ class Solution:
         self.updateVisitedSquares(self.CurrentSquares)
         self.addProhibitedToVisitedSquares()
         self.calculateTravelDistances()
-        # self.CleanUp()
-        # print(self.TravelDistances)
         return self.TravelDistances
     def setPrerequisiteAttributes(self, Ny, Nx, VillageMap):
         self.setNy(Ny)
         self.setNx(Nx)
         self.setVillageMap(VillageMap)
-        # self.setAllCoordinates()
     def setNy(self,Ny):
         """set the y-length of the village map"""
         self.Ny = Ny
@@ -68,8 +65,6 @@ class Solution:
     def setVillageMap(self, VillageMap):
         """set the VillageMap attribute by transforming the list input into an array"""
         self.VillageMap = np.array(VillageMap)
-    # def setAllCoordinates(self):
-        # self.AllCoordinates = np.indices((self.Ny,self.Nx))
     def initializeTravelDistances(self):
         """initialize array of shape (Ny,Nx) with -1 entries to signify that non of the squares have been travelled to yet. Also serves as inaccessible squares at the end"""
         self.TravelDistances = np.ones((self.Ny, self.Nx), dtype=int)*(-1)
@@ -89,15 +84,11 @@ class Solution:
     def calculateTravelDistances(self):
         """main algorithm"""
         while self.CurrentSquares:
-            # print(self.CurrentSquares)
             self.CurrentTravelDistance += 2
             self.travel()
             self.updateTravelDistances()
-            # self.Travel(CurrentSquares)
-            # self.SetOpenProhibitedDistances()
             self.updateVisitedSquares(self.CurrentSquares)
         self.setNonHouseDistances()
-
     def travel(self):
         PreviousSquares = convertSetOfTuplesTo2DArray(self.CurrentSquares)
         RightSquares = PreviousSquares.copy()
@@ -120,13 +111,22 @@ class Solution:
         for Square in CurrentSquaresUncheckedBounds:
             if(Square[0]>=self.Ny or Square[0]<0 or Square[1]>=self.Nx or Square[1]<0):
                 self.CurrentSquares.remove(Square)
+    def updateTravelDistances(self):
+        for Square in self.CurrentSquares:
+            self.TravelDistances[Square] = self.CurrentTravelDistance
+    def updateVisitedSquares(self, Squares):
+        """add Squares to the VisitedSquares"""
+        self.VisitedSquares.update(Squares)
+    def setNonHouseDistances(self):
+        Mask = ((self.VillageMap == "W") | (self.VillageMap == "N") | (self.VillageMap == "."))
+        self.TravelDistances = np.where(Mask, 0, self.TravelDistances)
+################oldmethods
     def travelSlowly(self):
         """Advance Branches in all directions starting from CurrentSquares"""
         PreviousSquares = self.CurrentSquares.copy()
         self.CurrentSquares.clear()
         for Square in PreviousSquares:
             self.travelLocally(Square)
-        
     def travelLocally(self, Square):
         self.travelRight(Square)
         self.travelLeft(Square)
@@ -157,15 +157,6 @@ class Solution:
         return Square[0]<0
     def isOutOfBottomBoundary(self, Square):
         return Square[0]>=self.Ny
-    def updateTravelDistances(self):
-        for Square in self.CurrentSquares:
-            self.TravelDistances[Square] = self.CurrentTravelDistance
-    def updateVisitedSquares(self, Squares):
-        """add Squares to the VisitedSquares"""
-        self.VisitedSquares.update(Squares)
-    def setNonHouseDistances(self):
-        Mask = ((self.VillageMap == "W") | (self.VillageMap == "N") | (self.VillageMap == "."))
-        self.TravelDistances = np.where(Mask, 0, self.TravelDistances)
 
 
 
