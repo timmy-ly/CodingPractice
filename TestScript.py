@@ -16,13 +16,8 @@ sol = Solution()
 
 if __name__=="__main__":
     # main
-    # prof = cProfile.Profile()
-    # prof.enable()
-    # Unittest.test_chefAndWells(sol, ny, nx, VillageMap)
-    # prof.disable()
-    # prof.dump_stats(DumpName)
-    # Unittest.PrintDump(DumpName, Key = 'tottime')
-    # print("{:} success".format(SaveName))
+    # sol.set_PrerequisiteAttributes()
+    Unittest.profile_CPU(sol.chefAndWells, ny, nx, VillageMap)
 
     # get_WellCoordinates
     Unittest.test_get_WellCoordinates(sol, ny, nx, VillageMap)

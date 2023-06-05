@@ -93,7 +93,7 @@ class Solution:
     def get_WellCoordinates(self):
         WellMask = (self.VillageMap == "W")
         Coords = np.transpose(WellMask.nonzero())
-        print(Coords)
+        print(Coords)#2D array
         return Coords
         # Coords = {}
         # rows, cols = self.AllCoordinates
