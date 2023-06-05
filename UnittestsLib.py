@@ -16,6 +16,14 @@ class Unittests:
         VillageMap = rng.choice( self.VillageComponents,  size = (n,m) )
         self.Print2DArray(VillageMap)
         return VillageMap
+    def readVillageMapFromFile(self, fname):
+        with open(fname) as file:
+            firstline = file.readline()
+            Ny, Nx = firstline.split()
+            Ny, Nx = int(Ny), int(Nx)
+        VillageMap = np.loadtxt(fname, dtype = str, skiprows=1)
+        return Ny, Nx, VillageMap
+            
     def Print2DArray(self, a):
         print("\n Generated a random village ")
         np.savetxt(sys.stdout.buffer, a, fmt='%s')
@@ -32,6 +40,8 @@ class Unittests:
         prof.disable()
         self.outputProfilingData(prof, SaveName)
         print(res)
+        # for line in res:
+            # print(line)
         return res
     def outputProfilingData(self, prof, SaveName):
         """output the profiling data as a file and in the terminal"""

@@ -11,8 +11,12 @@
 # need to optimize
 # for optimization, we realize that only the first TravelStep allows traveling in all directions
 # afterwards the pointy ends allow 3 directions while the side branches only allow 2-3 directions
-# create NewPositions by creating shifted Index arrays?
-# or Map the occupied squares and iterate? Mask then loop?
+# try bulk creating neighboring Squares...what about the boundaries?
+# create difference set with VisitedSquares
+# loop through difference set and check for boundaries? maybe use np.where
+# I think a combination of arrays and hashsets is possible
+# also I am pretty sure that it would be much easier to use 1d integer coordinates instead of tuples, just the input and output needs to reshaped
+
 # use a hashset. hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
 # might have been better to use 1d coordinates, i.e., sth. like iy*Nx + ix
 # Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
@@ -26,6 +30,7 @@
 
 from typing import List
 import numpy as np
+
 
 
 def convertSetOfTuplesTo2DArray(SetOfTuples):
@@ -88,6 +93,7 @@ class Solution:
     def calculateTravelDistances(self):
         """main algorithm"""
         while self.CurrentSquares:
+            # print(self.CurrentSquares)
             self.CurrentTravelDistance += 2
             self.travel()
             self.updateTravelDistances()
@@ -95,11 +101,30 @@ class Solution:
             # self.SetOpenProhibitedDistances()
             self.updateVisitedSquares(self.CurrentSquares)
         self.setNonHouseDistances()
-    def updateVisitedSquares(self, Squares):
-        """add Squares to the VisitedSquares"""
-        self.VisitedSquares.update(Squares)
-    # think about checking VisitedSquares after all NewSquares have been created?
+
     def travel(self):
+        PreviousSquares = convertSetOfTuplesTo2DArray(self.CurrentSquares)
+        RightSquares = PreviousSquares.copy()
+        LeftSquares = PreviousSquares.copy()
+        UpSquares = PreviousSquares.copy()
+        DownSquares = PreviousSquares.copy()
+        RightSquares[:,1] +=1
+        LeftSquares[:,1] -=1
+        UpSquares[:,0] -=1
+        DownSquares[:,0] +=1
+        RightSquares = convert2DArrayToSetOfTuples(RightSquares)
+        LeftSquares = convert2DArrayToSetOfTuples(LeftSquares)
+        UpSquares = convert2DArrayToSetOfTuples(UpSquares)
+        DownSquares = convert2DArrayToSetOfTuples(DownSquares)
+        NonUniqueCurrentSquares = RightSquares | LeftSquares | UpSquares | DownSquares
+        self.CurrentSquares = NonUniqueCurrentSquares - self.VisitedSquares
+        self.checkBoundaries()
+    def checkBoundaries(self):
+        CurrentSquaresUncheckedBounds = self.CurrentSquares.copy()
+        for Square in CurrentSquaresUncheckedBounds:
+            if(Square[0]>=self.Ny or Square[0]<0 or Square[1]>=self.Nx or Square[1]<0):
+                self.CurrentSquares.remove(Square)
+    def travelSlowly(self):
         """Advance Branches in all directions starting from CurrentSquares"""
         PreviousSquares = self.CurrentSquares.copy()
         self.CurrentSquares.clear()
@@ -139,6 +164,9 @@ class Solution:
     def updateTravelDistances(self):
         for Square in self.CurrentSquares:
             self.TravelDistances[Square] = self.CurrentTravelDistance
+    def updateVisitedSquares(self, Squares):
+        """add Squares to the VisitedSquares"""
+        self.VisitedSquares.update(Squares)
     def setNonHouseDistances(self):
         Mask = ((self.VillageMap == "W") | (self.VillageMap == "N") | (self.VillageMap == "."))
         self.TravelDistances = np.where(Mask, 0, self.TravelDistances)

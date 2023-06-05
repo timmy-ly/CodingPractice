@@ -3,15 +3,16 @@ import cProfile
 from VillageAndWells import *
 from UnittestsLib import Unittests
 
-# Ny = Nx = 10
-Ny, Nx = 4, 1
+Ny = Nx = 1000
+# Ny, Nx = 4, 1
 ProfileCPU = True
 SaveName = 'VillageAndWells'
 DumpName = SaveName + '.prof'
 Unittest = Unittests()
-VillageMap = Unittest.CreateRandomVillage(Ny, Nx)
+Ny, Nx, VillageMap = Unittest.readVillageMapFromFile("FailedTestCase.txt")
+# VillageMap = Unittest.CreateRandomVillage(Ny, Nx)
 sol = Solution()
-sol.setPrerequisiteAttributes(Ny, Nx, VillageMap)
+# sol.setPrerequisiteAttributes(Ny, Nx, VillageMap)
 
 
 
