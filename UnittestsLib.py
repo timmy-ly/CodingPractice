@@ -23,23 +23,40 @@ class Unittests:
         """print profiling data by reading Filename"""
         p = pstats.Stats(Filename)
         p.strip_dirs().sort_stats(Key).print_stats(*restrictions)
-    def profile_CPU(self, FunctionHandle, *args):
+    def profileCPUUsageOfFunction(self, FunctionHandle, *args):
         """use cProfile to profile the CPU usage of FunctionHandle"""
         SaveName = FunctionHandle.__name__
         prof = cProfile.Profile()
         prof.enable()
         res = FunctionHandle(*args)
         prof.disable()
-        self.output_profile_CPU(prof, SaveName)
-    def output_profile_CPU(self, prof, SaveName):
-        """ouptut the profiling data as a file and in the terminal"""
+        self.outputProfilingData(prof, SaveName)
+        return res
+    def outputProfilingData(self, prof, SaveName):
+        """output the profiling data as a file and in the terminal"""
         DumpName = SaveName + '.prof'
         prof.dump_stats(DumpName)
         self.PrintDump(DumpName, Key = 'tottime')
         print("{:} success".format(SaveName))
-    def test_get_WellCoordinates(self, sol, *args):
-        sol.set_PrerequisiteAttributes(*args)
-        sol.get_WellCoordinates()
+    def testgetWellSquares(self, sol):
+        sol.getWellSquares()
+    def testUpdateVisitedSquares(self, sol):
+        sol.initializeCurrentSquares()
+        sol.updateVisitedSquares()
+        print(sol.VisitedSquares)
+        print("(0,7) is in VisitedSquares", (0,7) in sol.VisitedSquares)
+        print("(0,7) is in VisitedSquares", (0,0) in sol.VisitedSquares)
+    # def testCalculateTravelDistances(self, sol):
+        # sol.setNonHouseDistances()
+        # print(self.TravelDistances)
+    def testGeneralFunction(self, FunctionHandle, *args, **kwargs):
+        res = FunctionHandle(*args, **kwargs)
+        print(res)
+        return res
+        
+
+
+
 
 
 
