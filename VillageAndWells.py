@@ -16,16 +16,12 @@
 # loop through difference set and check for boundaries? maybe use np.where
 # I think a combination of arrays and hashsets is possible
 # also I am pretty sure that it would be much easier to use 1d integer coordinates instead of tuples, just the input and output needs to reshaped
+#i.e., sth. like iy*Nx + ix
+
+# my code fails on test 1115, probably due to python/numpy version differences. I dont care about the old versions so I'm satisfied with this one
 
 # use a hashset. hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
-# might have been better to use 1d coordinates, i.e., sth. like iy*Nx + ix
-# Legend = {"H": 2, "W": 3, ".": 1, "N": 0}
-# 5 5
-# N H N . H
-# N N W . N
-# N H N H .
-# N W . W .
-# H H W . W
+
 
 
 from typing import List
