@@ -12,15 +12,13 @@
 # for optimization, we realize that only the first TravelStep allows traveling in all directions
 # afterwards the pointy ends allow 3 directions while the side branches only allow 2-3 directions
 # try bulk creating neighboring Squares...what about the boundaries?
-# create difference set with VisitedSquares
-# loop through difference set and check for boundaries? maybe use np.where
 # I think a combination of arrays and hashsets is possible
 # also I am pretty sure that it would be much easier to use 1d integer coordinates instead of tuples, just the input and output needs to reshaped
 #i.e., sth. like iy*Nx + ix
 
 # my code fails on test 1115, probably due to python/numpy version differences. I dont care about the old versions so I'm satisfied with this one
 
-# use a hashset. hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
+# hashtable in python is a dictionary. hashset has no key-value pair and is unordered, pretty much a list of unique elements where you can check the existence of elements very fast
 
 
 
