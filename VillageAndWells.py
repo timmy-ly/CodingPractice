@@ -41,7 +41,6 @@ class Solution:
         self.Nx = 0
         self.c = None
         self.CurrentTravelDistance = 0 # current CurrentTravelDistance
-        self.AmountOfWells = 0
         self.VisitedSquares = set()
     def chefAndWells(self, Ny : int, Nx : int, VillageMap : List[List[str]]) -> List[List[int]]:
         """Main method which solves the village and wells problem"""
@@ -159,10 +158,60 @@ class Solution:
         return Square[0]>=self.Ny
 
 
-
-
-
-
+class AlternativeSolution(Solution):
+    """this uses geeksforgeeks' axleitsorc72's solution without the deque class. It should be very similar to my very first working Solution, but it is actually slower than the current Solution"""
+    def __init__(self) -> None:
+        self.Ny = 0
+        self.Nx = 0
+        self.c = None
+        self.CurrentTravelDistance = 0 # current CurrentTravelDistance
+    def chefAndWells(self, Ny : int, Nx : int, VillageMap : List[List[str]]) -> List[List[int]]:
+        """Main method which solves the village and wells problem"""
+        self.setPrerequisiteAttributes(Ny, Nx, VillageMap)
+        self.initializeTravelDistances()
+        self.initializeCurrentSquares()
+        self.initializeVisitedSquares()
+        self.updateVisitedSquares(self.CurrentSquares)
+        self.calculateTravelDistances()
+        return self.TravelDistances
+    def initializeTravelDistances(self):
+        Mask = ((self.VillageMap == "W") | (self.VillageMap == "N") | (self.VillageMap == "."))
+        self.TravelDistances = np.where(Mask, 0, -1)
+    def initializeVisitedSquares(self):
+        self.VisitedSquares = np.zeros_like(self.VillageMap, dtype = bool)
+    def updateVisitedSquares(self, Squares):
+        """set Elements of VisitedSquares to True using provided Squares"""
+        for Square in Squares:
+            self.VisitedSquares[Square] = True
+    def calculateTravelDistances(self):
+        """main algorithm"""
+        while self.CurrentSquares:
+            self.CurrentTravelDistance += 2
+            self.travel()
+    def travel(self):
+        PreviousSquares = self.CurrentSquares.copy()
+        self.CurrentSquares.clear()
+        for Square in PreviousSquares:
+            self.travelLocally(Square)
+    def travelLocally(self, Square):
+        directions = [[0,1],[0,-1],[1,0],[-1,0]]
+        for direction in directions:
+            NewSquare = self.getNeighborSquare(Square, direction)
+            self.updateVisitedCurrentSquaresAndTravelDistances(NewSquare)
+    def getNeighborSquare(self, Square, direction):
+        # using tuple(np.add(...)) seems to be extremely slow
+        return (Square[0]+direction[0], Square[1]+direction[1])
+    def updateVisitedCurrentSquaresAndTravelDistances(self, Square):
+        if(self.isAvailable(Square)):
+            self.VisitedSquares[Square] = True
+            self.CurrentSquares.add(Square)
+            if(self.VillageMap[Square] == "H"):
+                self.updateTravelDistances(Square)
+    def isAvailable(self, Square):
+        return 0 <=Square[0] < self.Ny and 0 <=Square[1] < self.Nx and not self.VisitedSquares[Square] and self.VillageMap[Square] != "N"
+    def updateTravelDistances(self, Square):
+        self.TravelDistances[Square] = self.CurrentTravelDistance
+        
 
 
 
